@@ -2,7 +2,11 @@ import { Container, DisplayObject, Sprite, Texture, Text, TextStyle } from 'pixi
 import { Keyboard } from '../Keyboard';
 import { IScene, Manager } from '../Manager';
 
-const HERO_STEP_SIZE = 3;
+const HERO_STEP_SIZE = 5;
+const HERO_FACING_LEFT_ASSET = 'Simple cat facing left';
+const HERO_FACING_RIGHT_ASSET = 'Simple cat facing right';
+const HERO_WITH_TOY_FACING_LEFT_ASSET = 'Simple cat with toy facing left';
+const HERO_WITH_TOY_FACING_RIGHT_ASSET = 'Simple cat with toy facing right';
 enum HeroState {
   READY_TO_HUNT,
   FETCHING,
@@ -23,7 +27,7 @@ export class PlayRoomScene extends Container implements IScene {
 
   constructor() {
     super();
-    this.hero = Sprite.from('Simple cat');
+    this.hero = Sprite.from(HERO_FACING_RIGHT_ASSET);
     this.hero.anchor.set(0.5);
     this.hero.x = Manager.width / 2;
     this.hero.y = Manager.height / 2;
@@ -39,7 +43,7 @@ export class PlayRoomScene extends Container implements IScene {
 
     this.addChild(this.landingZone);
     this.addChild(this.hero);
-    this.generateToys(10);
+    this.generateToys(7);
 
     this.victoryMessage = this.prepareVicotryMessage();
     this.victoryMessage.x = Manager.width / 2;
@@ -128,10 +132,23 @@ export class PlayRoomScene extends Container implements IScene {
     if (Keyboard.arrowLeft() && this.hero.x > 0) {
       console.debug('Hero should go left');
       this.hero.x -= HERO_STEP_SIZE;
+
+      if (this.heroState === HeroState.FETCHING) {
+        this.hero.texture = Texture.from(HERO_WITH_TOY_FACING_LEFT_ASSET);
+      } else {
+        this.hero.texture = Texture.from(HERO_FACING_LEFT_ASSET);
+      }
     }
     if (Keyboard.arrowRight() && this.hero.x < Manager.width) {
       console.debug('Hero should go right');
+      this.hero.texture = Texture.from(HERO_FACING_RIGHT_ASSET);
       this.hero.x += HERO_STEP_SIZE;
+
+      if (this.heroState === HeroState.FETCHING) {
+        this.hero.texture = Texture.from(HERO_WITH_TOY_FACING_RIGHT_ASSET);
+      } else {
+        this.hero.texture = Texture.from(HERO_FACING_RIGHT_ASSET);
+      }
     }
   }
 
@@ -143,7 +160,7 @@ export class PlayRoomScene extends Container implements IScene {
       const toyState = this.toysState.get(toy);
       if (this.collide(this.hero, toy) && toyState !== ToyState.HUNTED) {
         console.log('Toy is hunted!');
-        this.hero.texture = Texture.from('Simple cat with red ball');
+        this.hero.texture = Texture.from(HERO_WITH_TOY_FACING_RIGHT_ASSET);
         this.toysState.set(toy, ToyState.HUNTED);
         this.removeChild(toy);
         this.heroState = HeroState.FETCHING;
@@ -169,7 +186,7 @@ export class PlayRoomScene extends Container implements IScene {
     }
     if (this.collide(this.hero, this.landingZone)) {
       console.log('Toy is fetched!');
-      this.hero.texture = Texture.from('Simple cat');
+      this.hero.texture = Texture.from(HERO_FACING_RIGHT_ASSET);
       this.heroState = HeroState.READY_TO_HUNT;
       if (this.allHunted()) {
         console.log('Victory!');

@@ -47,6 +47,7 @@ export class LoaderScene extends Container implements IScene {
   private gameLoaded(): void {
     // Change scene to the game scene!
     Manager.changeScene(new PlayRoomScene());
+    //Manager.changeScene(new GameScene());
   }
 
   public update(framesPassed: number): void {
