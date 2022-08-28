@@ -4,4 +4,5 @@ export const assets = [
   { name: 'Simple cat', url: './cartoon-chilli/simple-cat.png' },
   { name: 'Milky way', url: './wallpappers/milky-way.jpg' },
   { name: 'Red ball', url: './toys/red-ball.png' },
+  { name: 'Blue bed', url: './furnitures/blue-bed.png' },
 ];

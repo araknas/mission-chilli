@@ -5,16 +5,25 @@ import { IScene, Manager } from '../Manager';
 const HERO_STEP_SIZE = 3;
 export class PlayRoomScene extends Container implements IScene {
   private hero: Sprite;
+  private landingZone: Sprite;
+
   private toys: Sprite[] = [];
   constructor() {
     super();
     this.hero = Sprite.from('Simple cat');
-
     this.hero.anchor.set(0.5);
     this.hero.x = Manager.width / 2;
     this.hero.y = Manager.height / 2;
     // Scale dynamically later (1/10 background size?)
     this.hero.scale = { x: 0.2, y: 0.2 };
+
+    this.landingZone = Sprite.from('Blue bed');
+    this.landingZone.x = 10;
+    this.landingZone.y = Manager.height / 4;
+    // Scale dynamically later (1/10 background size?)
+    this.landingZone.scale = { x: 0.3, y: 0.3 };
+
+    this.addChild(this.landingZone);
     this.addChild(this.hero);
     this.generateToys();
   }
