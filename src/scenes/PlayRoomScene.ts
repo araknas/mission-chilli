@@ -1,13 +1,22 @@
-import { Container, DisplayObject, Sprite } from 'pixi.js';
+import { Container, DisplayObject, Sprite, Texture } from 'pixi.js';
 import { Keyboard } from '../Keyboard';
 import { IScene, Manager } from '../Manager';
 
 const HERO_STEP_SIZE = 3;
+enum HeroState {
+  READY_TO_HUNT,
+  FETCHING,
+  WON,
+}
+
 export class PlayRoomScene extends Container implements IScene {
   private hero: Sprite;
   private landingZone: Sprite;
 
-  private toys: Sprite[] = [];
+  private toys: DisplayObject[] = [];
+  private toysState: Map<DisplayObject, string> = new Map<DisplayObject, string>();
+  private heroState: HeroState;
+
   constructor() {
     super();
     this.hero = Sprite.from('Simple cat');
@@ -16,6 +25,7 @@ export class PlayRoomScene extends Container implements IScene {
     this.hero.y = Manager.height / 2;
     // Scale dynamically later (1/10 background size?)
     this.hero.scale = { x: 0.2, y: 0.2 };
+    this.heroState = HeroState.READY_TO_HUNT;
 
     this.landingZone = Sprite.from('Blue bed');
     this.landingZone.x = 10;
@@ -33,6 +43,8 @@ export class PlayRoomScene extends Container implements IScene {
     const toy2 = this.generateRedBall();
     const toy3 = this.generateRedBall();
     const toy4 = this.generateRedBall();
+
+    this.toys.push(toy1, toy2, toy3, toy4);
 
     this.dropInRandomLocation(toy1);
     this.dropInRandomLocation(toy2);
@@ -68,7 +80,30 @@ export class PlayRoomScene extends Container implements IScene {
     return toy;
   }
 
+  private collide(objA: DisplayObject, objB: DisplayObject): boolean {
+    const a = objA.getBounds();
+    const b = objB.getBounds();
+
+    const rightmostLeft = a.left < b.left ? b.left : a.left;
+    const leftmostRight = a.right > b.right ? b.right : a.right;
+
+    if (leftmostRight <= rightmostLeft) {
+      return false;
+    }
+
+    const bottommostTop = a.top < b.top ? b.top : a.top;
+    const topmostBottom = a.bottom > b.bottom ? b.bottom : a.bottom;
+
+    return topmostBottom > bottommostTop;
+  }
+
   public update(framesPassed: number): void {
+    this.updateHeroLocation();
+    this.handleToyCatch();
+    this.handleToyFetch();
+  }
+
+  private updateHeroLocation() {
     if (Keyboard.arrowUp() && this.hero.y > 0) {
       console.debug('Hero should go up');
       this.hero.y -= HERO_STEP_SIZE;
@@ -84,6 +119,31 @@ export class PlayRoomScene extends Container implements IScene {
     if (Keyboard.arrowRight() && this.hero.x < Manager.width) {
       console.debug('Hero should go right');
       this.hero.x += HERO_STEP_SIZE;
+    }
+  }
+
+  private handleToyCatch() {
+    if (this.heroState === HeroState.FETCHING) {
+      return;
+    }
+    this.toys.forEach((toy) => {
+      const toyState = this.toysState.get(toy);
+      if (this.collide(this.hero, toy) && toyState != 'hunted') {
+        console.log('Toy is hunted! - ');
+        this.hero.texture = Texture.from('Simple cat with red ball');
+        this.toysState.set(toy, 'hunted');
+        this.removeChild(toy);
+        this.heroState = HeroState.FETCHING;
+        return;
+      }
+    });
+  }
+
+  private handleToyFetch() {
+    if (this.collide(this.hero, this.landingZone)) {
+      console.log('Toy is fetched! - ');
+      this.hero.texture = Texture.from('Simple cat');
+      this.heroState = HeroState.READY_TO_HUNT;
     }
   }
 }
