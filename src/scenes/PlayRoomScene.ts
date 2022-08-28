@@ -1,4 +1,4 @@
-import { Container, DisplayObject, Sprite, Texture } from 'pixi.js';
+import { Container, DisplayObject, Sprite, Texture, Text, TextStyle } from 'pixi.js';
 import { Keyboard } from '../Keyboard';
 import { IScene, Manager } from '../Manager';
 
@@ -8,10 +8,14 @@ enum HeroState {
   FETCHING,
   WON,
 }
+enum ToyState {
+  HUNTED = 'hunted',
+}
 
 export class PlayRoomScene extends Container implements IScene {
   private hero: Sprite;
   private landingZone: Sprite;
+  private victoryMessage: Text;
 
   private toys: DisplayObject[] = [];
   private toysState: Map<DisplayObject, string> = new Map<DisplayObject, string>();
@@ -36,6 +40,25 @@ export class PlayRoomScene extends Container implements IScene {
     this.addChild(this.landingZone);
     this.addChild(this.hero);
     this.generateToys();
+
+    this.victoryMessage = this.prepareVicotryMessage();
+    this.victoryMessage.x = Manager.width / 2;
+    this.victoryMessage.y = Manager.height / 2;
+    this.victoryMessage.anchor.set(0.5);
+    this.victoryMessage.visible = false;
+
+    this.addChild(this.victoryMessage);
+  }
+
+  private prepareVicotryMessage() {
+    const style = new TextStyle({
+      dropShadow: true,
+      dropShadowBlur: 4,
+      fill: '#dabb4e',
+      fontFamily: 'Impact, Charcoal, sans-serif',
+      fontSize: 59,
+    });
+    return new Text('You won!', style);
   }
 
   private generateToys(): void {
@@ -128,10 +151,10 @@ export class PlayRoomScene extends Container implements IScene {
     }
     this.toys.forEach((toy) => {
       const toyState = this.toysState.get(toy);
-      if (this.collide(this.hero, toy) && toyState != 'hunted') {
-        console.log('Toy is hunted! - ');
+      if (this.collide(this.hero, toy) && toyState !== ToyState.HUNTED) {
+        console.log('Toy is hunted!');
         this.hero.texture = Texture.from('Simple cat with red ball');
-        this.toysState.set(toy, 'hunted');
+        this.toysState.set(toy, ToyState.HUNTED);
         this.removeChild(toy);
         this.heroState = HeroState.FETCHING;
         return;
@@ -139,11 +162,29 @@ export class PlayRoomScene extends Container implements IScene {
     });
   }
 
+  private allHunted() {
+    let victory = true;
+    this.toys.forEach((toy) => {
+      const toyState = this.toysState.get(toy);
+      if (toyState !== ToyState.HUNTED) {
+        victory = false;
+      }
+    });
+    return victory;
+  }
+
   private handleToyFetch() {
+    if (this.heroState === HeroState.READY_TO_HUNT) {
+      return;
+    }
     if (this.collide(this.hero, this.landingZone)) {
-      console.log('Toy is fetched! - ');
+      console.log('Toy is fetched!');
       this.hero.texture = Texture.from('Simple cat');
       this.heroState = HeroState.READY_TO_HUNT;
+      if (this.allHunted()) {
+        console.log('Victory!');
+        this.victoryMessage.visible = true;
+      }
     }
   }
 }
