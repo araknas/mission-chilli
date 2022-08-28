@@ -39,7 +39,7 @@ export class PlayRoomScene extends Container implements IScene {
 
     this.addChild(this.landingZone);
     this.addChild(this.hero);
-    this.generateToys();
+    this.generateToys(10);
 
     this.victoryMessage = this.prepareVicotryMessage();
     this.victoryMessage.x = Manager.width / 2;
@@ -61,23 +61,13 @@ export class PlayRoomScene extends Container implements IScene {
     return new Text('You won!', style);
   }
 
-  private generateToys(): void {
-    const toy1 = this.generateRedBall();
-    const toy2 = this.generateRedBall();
-    const toy3 = this.generateRedBall();
-    const toy4 = this.generateRedBall();
-
-    this.toys.push(toy1, toy2, toy3, toy4);
-
-    this.dropInRandomLocation(toy1);
-    this.dropInRandomLocation(toy2);
-    this.dropInRandomLocation(toy3);
-    this.dropInRandomLocation(toy4);
-
-    this.addChild(toy1);
-    this.addChild(toy2);
-    this.addChild(toy3);
-    this.addChild(toy4);
+  private generateToys(count: number): void {
+    for (let i = 0; i < count; i++) {
+      const toy = this.generateRedBall();
+      this.toys.push(toy);
+      this.dropInRandomLocation(toy);
+      this.addChild(toy);
+    }
   }
 
   private dropInRandomLocation(object: DisplayObject): void {
