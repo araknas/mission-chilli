@@ -1,6 +1,7 @@
 import { Application } from '@pixi/app';
 import { DisplayObject } from '@pixi/display';
 import { Ticker } from 'pixi.js';
+import { Keyboard } from './Keyboard';
 
 export class Manager {
   private constructor() {
@@ -41,6 +42,8 @@ export class Manager {
 
     // Add the ticker
     Ticker.shared.add(Manager.update);
+    // Inititalize Keyboard monitoring
+    Keyboard.initialize();
   }
 
   // Call this function when you want to go to a new scene

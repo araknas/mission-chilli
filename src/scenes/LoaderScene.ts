@@ -2,6 +2,7 @@ import { Container, Graphics, Loader } from 'pixi.js';
 import { assets } from '../assets';
 import { IScene, Manager } from '../Manager';
 import { GameScene } from './GameScene';
+import { PlayRoomScene } from './PlayRoomScene';
 
 export class LoaderScene extends Container implements IScene {
   // for making our loader graphics...
@@ -45,7 +46,7 @@ export class LoaderScene extends Container implements IScene {
 
   private gameLoaded(): void {
     // Change scene to the game scene!
-    Manager.changeScene(new GameScene());
+    Manager.changeScene(new PlayRoomScene());
   }
 
   public update(framesPassed: number): void {
