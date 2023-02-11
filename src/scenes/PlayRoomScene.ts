@@ -17,7 +17,9 @@ enum ToyState {
 }
 
 export class PlayRoomScene extends Container implements IScene {
+  private backgroundWallpapper: Sprite;
   private hero: Sprite;
+  private stars = Sprite.from('Stars');
   private landingZone: Sprite;
   private victoryMessage: Text;
 
@@ -27,6 +29,13 @@ export class PlayRoomScene extends Container implements IScene {
 
   constructor() {
     super();
+    this.backgroundWallpapper = Sprite.from('Floor_wooden_1');
+    this.backgroundWallpapper.width = Manager.width;
+    this.backgroundWallpapper.height = Manager.height;
+    this.addChild(this.backgroundWallpapper);
+
+
+
     this.hero = Sprite.from(HERO_FACING_RIGHT_ASSET);
     this.hero.anchor.set(0.5);
     this.hero.x = Manager.width / 2;
@@ -39,9 +48,16 @@ export class PlayRoomScene extends Container implements IScene {
     this.landingZone.x = 10;
     this.landingZone.y = Manager.height / 4;
     // Scale dynamically later (1/10 background size?)
-    this.landingZone.scale = { x: 0.3, y: 0.3 };
+    this.landingZone.scale = { x: 0.5, y: 0.5 };
+
+    this.stars.visible = false;
+    this.stars.x = -4;
+    this.stars.y = Manager.height / 20;
+    this.stars.scale = { x: 0.5, y: 0.5 };
+
 
     this.addChild(this.landingZone);
+    this.addChild(this.stars);
     this.addChild(this.hero);
     this.generateToys(7);
 
@@ -121,6 +137,7 @@ export class PlayRoomScene extends Container implements IScene {
   }
 
   private updateHeroLocation() {
+
     if (Keyboard.arrowUp() && this.hero.y > 0) {
       console.debug('Hero should go up');
       this.hero.y -= HERO_STEP_SIZE;
@@ -140,6 +157,8 @@ export class PlayRoomScene extends Container implements IScene {
       }
     }
     if (Keyboard.arrowRight() && this.hero.x < Manager.width) {
+      this.stars.visible = false;
+
       console.debug('Hero should go right');
       this.hero.texture = Texture.from(HERO_FACING_RIGHT_ASSET);
       this.hero.x += HERO_STEP_SIZE;
@@ -186,6 +205,8 @@ export class PlayRoomScene extends Container implements IScene {
     }
     if (this.collide(this.hero, this.landingZone)) {
       console.log('Toy is fetched!');
+      this.stars.visible = true;
+
       this.hero.texture = Texture.from(HERO_FACING_RIGHT_ASSET);
       this.heroState = HeroState.READY_TO_HUNT;
       if (this.allHunted()) {
