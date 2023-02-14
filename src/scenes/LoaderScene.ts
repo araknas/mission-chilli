@@ -2,7 +2,6 @@ import { Container, Graphics, Loader } from 'pixi.js';
 import { assets } from '../assets';
 import { IScene, Manager } from '../Manager';
 import { GameScene } from './GameScene';
-import { PlayRoomScene } from './PlayRoomScene';
 
 export class LoaderScene extends Container implements IScene {
   // for making our loader graphics...

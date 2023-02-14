@@ -3,22 +3,21 @@ import { IScene, Manager } from '../Manager';
 import { PlayRoomScene } from './PlayRoomScene';
 
 export class GameScene extends Container implements IScene {
-  private clampy: Sprite;
+  private hero: Sprite;
   private startButton: Sprite;
-  private clampyVelocity: number;
+  private heroVelocity: number;
   private backgroundWallpapper: Sprite;
   constructor() {
     super();
 
-
-    this.clampy = Sprite.from('Chilli in grill');
+    this.hero = Sprite.from('Chilli in grill');
     this.backgroundWallpapper = Sprite.from('Milky way');
     this.backgroundWallpapper.width = Manager.width;
     this.backgroundWallpapper.height = Manager.height;
 
-    this.clampy.anchor.set(0.5);
-    this.clampy.x = Manager.width / 2;
-    this.clampy.y = Manager.height / 2;
+    this.hero.anchor.set(0.5);
+    this.hero.x = Manager.width / 2;
+    this.hero.y = Manager.height / 2;
 
     this.startButton = Sprite.from('Start Button');
     this.startButton.anchor.set(0.5);
@@ -31,28 +30,25 @@ export class GameScene extends Container implements IScene {
     this.startButton.on('click', () =>  Manager.changeScene(new PlayRoomScene()));
 
     this.addChild(this.backgroundWallpapper);
-    this.addChild(this.clampy);
-    this.addChild(this.startButton);
+    this.addChild(this.hero);
+    //Uncomment on showcase
+    //this.addChild(this.startButton);
 
+    this.heroVelocity = 5;
+  }
 
-    this.clampyVelocity = 5;
-  }
-  private static onStart(): void {
-    console.log('should start');
-    Manager.changeScene(new PlayRoomScene());
-  }
   public update(framesPassed: number): void {
-    // Lets move clampy!
-    this.clampy.x += this.clampyVelocity * framesPassed;
+    // Lets move hero!
+    this.hero.x += this.heroVelocity * framesPassed;
 
-    if (this.clampy.x > Manager.width) {
-      this.clampy.x = Manager.width;
-      this.clampyVelocity = -this.clampyVelocity;
+    if (this.hero.x > Manager.width) {
+      this.hero.x = Manager.width;
+      this.heroVelocity = -this.heroVelocity;
     }
 
-    if (this.clampy.x < 0) {
-      this.clampy.x = 0;
-      this.clampyVelocity = -this.clampyVelocity;
+    if (this.hero.x < 0) {
+      this.hero.x = 0;
+      this.heroVelocity = -this.heroVelocity;
     }
   }
 }

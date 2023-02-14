@@ -1,3 +1,4 @@
+//LETS JUMP INTO CODE - PART 3:
 export const assets = [
   { name: 'Red rectangle', url: './rects/red.png' },
   { name: 'Chilli in grill', url: './real-chilli/chilli-in-grill.png' },

@@ -73,7 +73,9 @@ module.exports = (env, argv) => {
                 patterns: [{ from: 'static/' }],
             }),
 
+            //LETS JUMP INTO CODE - PART 1:
             // Make an index.html from the template
+
             new HtmlWebpackPlugin({
                 template: 'src/index.ejs',
                 hash: true,
